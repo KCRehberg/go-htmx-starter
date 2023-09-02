@@ -11,8 +11,13 @@ import (
 func Run(os_signal chan os.Signal) {
 	router := gin.Default()
 
-	router.LoadHTMLGlob("/mnt/c/Users/Skaro/Desktop/workspace/personal/go-htmx/internal/templates/**/*.html")
-	router.Static("/static", "/mnt/c/Users/Skaro/Desktop/workspace/personal/go-htmx/static")
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+
+	router.LoadHTMLGlob(pwd + "/internal/templates/**/*.html")
+	router.Static("/static", pwd+"/static")
 
 	controllers.Pages(router)
 	controllers.Api(router)

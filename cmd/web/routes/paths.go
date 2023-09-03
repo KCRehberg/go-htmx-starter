@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"go-htmx/cmd/web/controllers"
 	"log"
 	"os"
-	"personal/go-htmx/cmd/web/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +16,7 @@ func Run(os_signal chan os.Signal) {
 		log.Println(err)
 	}
 
-	router.LoadHTMLGlob(pwd + "/internal/templates/**/*.html")
+	router.LoadHTMLGlob(pwd + "/internal/src/templates/**/*.html")
 	router.Static("/static", pwd+"/static")
 
 	controllers.Pages(router)

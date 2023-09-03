@@ -1,10 +1,11 @@
 package main
 
 import (
+	api "go-htmx/cmd/web/routes"
+	"go-htmx/internal/database"
 	"log"
 	"os"
 	"os/signal"
-	api "personal/go-htmx/cmd/web/routes"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -21,6 +22,8 @@ func main() {
 		syscall.SIGTERM,
 		syscall.SIGINT,
 		syscall.SIGSEGV)
+
+	database.Connect()
 
 	api.Run(killSignal) // Blocks anything after this
 }

@@ -90,8 +90,14 @@ func createAccount(c *gin.Context) {
 		Password: string(hashedPassword),
 	}
 
-	database.Create(&account)
+	tx := database.Create(&account)
 
+	if tx.Error != nil {
+		helpers.BadRequestWithMsg(c, "Email is already in use.")
+		return
+	}
+
+	c.SetCookie("user_email", account.Email, 3600, "/", "localhost", false, true)
 	helpers.SuccessWithData(c, gin.H{
 		"message": "success",
 	})

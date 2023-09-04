@@ -29,13 +29,16 @@
 		<div class="flex justify-center items-center bg-slate-600 grow">
 			<div class="flex flex-col justify-between items-center">
 				<h2 class="text-3xl mb-5">Sign Up</h2>
-				<form hx-post="/api/account/sign-up" hx-ext="json-enc" hx-swap="none" class="flex flex-col gap-5 justify-center items-center">
-					<input type="email" placeholder="email" name="email" />
-					<input type="password" placeholder="password" name="password" />
+				<form hx-post="/api/account/sign-up" hx-ext="json-enc" hx-swap="none" _="on htmx:afterRequest if event.detail.successful window.open('/', '_self') else put JSON.parse(event.detail.xhr.response).message into #login-error-message.innerHTML then if #login-error.classList.contains('hidden') toggle .hidden on #login-error" class="flex flex-col gap-5 justify-center items-center">
+					<input type="email" placeholder="email" name="email" required />
+					<input type="password" placeholder="password" name="password" required />
 					<button type="submit" class="bg-blue-500 w-full py-2 mb-5">
 						Create Account
 					</button>
 				</form>
+				<div class="hidden" id="login-error">
+					<span class="text-red-500">Error: </span><span class="text-red-500" id="login-error-message"></span>
+				</div>
 			</div>
 		</div>
 	</main>

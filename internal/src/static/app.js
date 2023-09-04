@@ -1,1 +1,1 @@
-console.log("hello world!");
+document.body.addEventListener("htmx:afterRequest",function(e){console.log(e)});

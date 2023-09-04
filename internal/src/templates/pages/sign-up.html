@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{{ template "meta" }}
+	<title>{{ .title }}</title>
+</head>
+<body>
+	<main class="flex flex-col h-screen">
+		<header class="flex justify-center items-center h-[8vh]">
+			<div class="flex justify-between items-center w-[1200px]">
+				<div>
+					<img src="/assets/go.svg" alt="go logo" height="20px" width="60px" />
+				</div>
+				<div>
+					<span class="font-bold text-3xl" id="header-title">HOME</span>
+				</div>
+				{{ if .user_email }}
+					<div>
+						<span>{{ .user_email }}</span>
+						<span hx-get="/api/account/sign-out" hx-swap="none" class="bg-blue-500 px-6 py-4">SIGN OUT</span>
+					</div>
+				{{ else }}
+					<div>
+						<a href="/sign-in" class="font-bold text-3xl">Sign in</a>
+					</div>
+				{{end}}
+			</div>
+		</header>
+		<div class="flex justify-center items-center bg-slate-600 grow">
+			<div class="flex flex-col justify-between items-center">
+				<h2 class="text-3xl mb-5">Sign Up</h2>
+				<form hx-post="/api/account/sign-up" hx-ext="json-enc" hx-swap="none" class="flex flex-col gap-5 justify-center items-center">
+					<input type="email" placeholder="email" name="email" />
+					<input type="password" placeholder="password" name="password" />
+					<button type="submit" class="bg-blue-500 w-full py-2 mb-5">
+						Create Account
+					</button>
+				</form>
+			</div>
+		</div>
+	</main>
+</body>
+<script src="/static/app.js"></script>
+</html>

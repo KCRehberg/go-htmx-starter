@@ -18,6 +18,7 @@ func Run(os_signal chan os.Signal) {
 
 	router.LoadHTMLGlob(pwd + "/internal/src/templates/**/*.html")
 	router.Static("/static", pwd+"/internal/src/static")
+	router.Static("/assets", pwd+"/internal/src/public")
 
 	controllers.Pages(router)
 	controllers.Api(router)

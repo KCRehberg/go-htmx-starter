@@ -5,6 +5,9 @@ import (
 	"go-htmx/internal/database"
 	"go-htmx/internal/database/models"
 	"go-htmx/internal/helpers"
+	"go-htmx/internal/utils/token"
+	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -45,26 +48,41 @@ func signIn(c *gin.Context) {
 		return
 	}
 
-	account := models.Accounts{}
+	account := models.Account{}
 
 	jsonData, _ := json.Marshal(data)
 
 	json.Unmarshal(jsonData, &account)
 
-	err := bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(request.Password))
-	if err != nil {
+	err := verifyPassword(request.Password, account.Password)
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		helpers.BadRequestWithMsg(c, "Incorrent Password")
 		return
 	}
 
-	c.SetCookie("user_email", account.Email, 3600, "/", "localhost", false, true)
+	if account.IsAdmin {
+		token, err := token.GenerateToken(account.Id, true)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+
+		c.SetCookie("admin_auth", token, 86400, "/", "localhost", false, true)
+	}
+
+	token, err := token.GenerateToken(account.Id, false)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.SetCookie("auth", token, 86400, "/", "localhost", false, true)
 	helpers.SuccessWithData(c, gin.H{
 		"message": "success",
 	})
 }
 
 func signOut(c *gin.Context) {
-	c.SetCookie("user_email", "", -3600, "/", "localhost", false, true)
+	c.SetCookie("auth", "", -3600, "/", "localhost", false, true)
+	c.SetCookie("admin_auth", "", -3600, "/", "localhost", false, true)
 
 	helpers.EmptySuccessRequest(c)
 }
@@ -85,9 +103,14 @@ func createAccount(c *gin.Context) {
 		panic(err)
 	}
 
-	account := models.Accounts{
+	account := models.Account{
 		Email:    request.Email,
 		Password: string(hashedPassword),
+	}
+
+	is_admin := account.Email == os.Getenv("ADMIN_EMAIL")
+	if is_admin {
+		account.IsAdmin = true
 	}
 
 	tx := database.Create(&account)
@@ -97,8 +120,26 @@ func createAccount(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("user_email", account.Email, 3600, "/", "localhost", false, true)
+	if is_admin {
+		token, err := token.GenerateToken(account.Id, true)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+
+		c.SetCookie("admin_auth", token, 86400, "/", "localhost", false, true)
+	}
+
+	token, err := token.GenerateToken(account.Id, false)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.SetCookie("auth", token, 86400, "/", "localhost", false, true)
 	helpers.SuccessWithData(c, gin.H{
 		"message": "success",
 	})
+}
+
+func verifyPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

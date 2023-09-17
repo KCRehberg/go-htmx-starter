@@ -26,7 +26,9 @@ func Connect() {
 
 	// Migrate
 	dbErr := db.AutoMigrate(
-		&models.Accounts{},
+		&models.Account{},
+		&models.Product{},
+		&models.CartItem{},
 	)
 
 	if dbErr != nil {

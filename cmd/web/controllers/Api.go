@@ -9,6 +9,8 @@ func Api(router *gin.Engine) *gin.RouterGroup {
 
 	{
 		InitAccountApi(api)
+		InitProductApi(api)
+		InitCartApi(api)
 	}
 
 	return api

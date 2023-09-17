@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{{ template "meta" }}
+	<title>Admin</title>
+</head>
+<body class="flex flex-col h-screen">
+	{{ template "header" . }}
+	<main class="flex justify-center items-center grow bg-slate-600">
+		<form
+		_="on htmx:afterRequest if event.detail.successful window.alert('success') else put JSON.parse(event.detail.xhr.response).message into #login-error-message.innerHTML then if #login-error.classList.contains('hidden') toggle .hidden on #login-error"
+		hx-post="/api/product/create"
+		hx-on::after-request="this.reset()"
+		hx-ext="json-enc"
+		hx-swap="none"
+		class="flex flex-col gap-5 justify-center items-center"
+	>
+		<input type="text" placeholder="product name" name="name" required />
+		<input type="text" placeholder="price" name="price" required />
+		<input type="text" placeholder="weight" name="weight" required />
+		<button type="submit" class="bg-blue-500 w-full py-2 mb-5">
+			Create Product
+		</button>
+	</form>
+	</main>
+</body>
+<script src="/static/app.js"></script>
+</html>

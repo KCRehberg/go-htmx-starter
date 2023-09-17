@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{{ template "meta" }}
+	<title>Account Dashboard</title>
+</head>
+<body class="flex flex-col h-screen">
+	{{ template "header" . }}
+	<main class="flex justify-center items-center grow bg-slate-600">
+		<button class="px-10 py-5 bg-primary text-white mt-5" _="on click toggle .text-primary on #header-title">
+				CLICK ME TO TOGGLE A CLASS WITH HYPERSCRIPT
+		</button>
+	</main>
+</body>
+<script src="/static/app.js"></script>
+</html>
